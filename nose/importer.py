@@ -9,8 +9,6 @@ import os
 import sys
 from nose.config import Config
 
-from imp import find_module, load_module, acquire_lock, release_lock
-
 log = logging.getLogger(__name__)
 
 try:
@@ -48,6 +46,12 @@ class Importer(object):
         """Import a module *only* from path, ignoring sys.path and
         reloading if the version in sys.modules is not the one we want.
         """
+
+        # `imp` is deprecated in python3, but we don't seem to be using this function afaict and
+        # I can't find where this method is called from to properly fix it.  So, for now, let's
+        # import the packages locally to stop deprecation warnings when loading this module.
+        from imp import acquire_lock, find_module, load_module, release_lock
+
         dir = os.path.normpath(os.path.abspath(dir))
         log.debug("Import %s from %s", fqname, dir)
 
